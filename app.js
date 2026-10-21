@@ -125,14 +125,26 @@ renderResults();
       : "Digite 1, 2 ou 3 para selecionar uma opção fictícia";
   }
 
+  
   keypad.querySelectorAll("[data-digit]").forEach(botao => {
     botao.addEventListener("click", () => {
       if (numeroDigitado.length < 1) {
         numeroDigitado = botao.dataset.digit;
         atualizarDisplay();
+
+        const opcao = document.querySelector(
+          `.option[data-choice="${numeroDigitado}"]`
+        );
+
+        if (opcao && ["1", "2", "3"].includes(numeroDigitado)) {
+          opcao.click();
+          display.textContent =
+            `Opção ${numeroDigitado} selecionada. Aperte CONFIRMA para continuar.`;
+        }
       }
     });
   });
+  
 
   corrige.addEventListener("click", () => {
     numeroDigitado = "";
