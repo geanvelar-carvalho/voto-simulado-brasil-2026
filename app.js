@@ -107,3 +107,59 @@ if (PIX_KEY.trim()) {
   });
 }
 renderResults();
+
+/* Teclado numérico da urna simulada */
+(() => {
+  const display = document.getElementById("urnaDisplay");
+  const keypad = document.getElementById("urnaKeypad");
+  const corrige = document.getElementById("urnaCorrige");
+  const confirma = document.getElementById("urnaConfirma");
+
+  if (!display || !keypad || !corrige || !confirma) return;
+
+  let numeroDigitado = "";
+
+  function atualizarDisplay() {
+    display.textContent = numeroDigitado
+      ? `Opção digitada: ${numeroDigitado}`
+      : "Digite 1, 2 ou 3 para selecionar uma opção fictícia";
+  }
+
+  keypad.querySelectorAll("[data-digit]").forEach(botao => {
+    botao.addEventListener("click", () => {
+      if (numeroDigitado.length < 1) {
+        numeroDigitado = botao.dataset.digit;
+        atualizarDisplay();
+      }
+    });
+  });
+
+  corrige.addEventListener("click", () => {
+    numeroDigitado = "";
+    atualizarDisplay();
+    const feedback = document.getElementById("feedback");
+    if (feedback) feedback.textContent = "Seleção numérica limpa.";
+  });
+
+  confirma.addEventListener("click", () => {
+    const opcoes = {
+      "1": "1",
+      "2": "2",
+      "3": "3"
+    };
+
+    if (!Object.prototype.hasOwnProperty.call(opcoes, numeroDigitado)) {
+      display.textContent = "Digite 1, 2 ou 3. Opção fictícia.";
+      return;
+    }
+
+    const botaoOpcao = document.querySelector(
+      `.option[data-choice="${opcoes[numeroDigitado]}"]`
+    );
+
+    if (botaoOpcao) {
+      botaoOpcao.click();
+      display.textContent = `Opção ${numeroDigitado} selecionada. Use CONFIRMAR VOTO FICTÍCIO para registrar.`;
+    }
+  });
+})();
