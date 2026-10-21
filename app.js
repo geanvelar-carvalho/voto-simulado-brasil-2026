@@ -3,7 +3,7 @@
  * CONFIGURAÇÃO: coloque sua chave Pix na constante PIX_KEY abaixo.
  * Não adicione CPF, senhas ou dados bancários privados ao site.
  */
-const PIX_KEY = ""; // Ex.: "sua-chave-pix-aleatoria-aqui"
+const PIX_KEY = "70df6774-9247-464e-b627-f098e87d73b7";
 const STORAGE_KEY = "votoSimuladoBrasil.v1";
 const choices = [
   { id: "1", label: "Opção Aurora" },
