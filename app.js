@@ -110,6 +110,7 @@ if (PIX_KEY.trim()) {
 renderResults();
 
 /* Teclado numérico da urna simulada */
+/* Teclado numérico da urna simulada */
 (() => {
   const display = document.getElementById("urnaDisplay");
   const keypad = document.getElementById("urnaKeypad");
@@ -122,47 +123,57 @@ renderResults();
 
   function atualizarDisplay() {
     display.textContent = numeroDigitado
-      ? `Opção digitada: ${numeroDigitado}`
-      : "Digite 1, 2 ou 3 para selecionar uma opção fictícia";
+      ? `Número digitado: ${numeroDigitado}`
+      : "Digite 22 (Flávio) ou 13 (Lula).";
   }
 
-  
   keypad.querySelectorAll("[data-digit]").forEach(botao => {
     botao.addEventListener("click", () => {
-      if (numeroDigitado.length < 1) {
-        numeroDigitado = botao.dataset.digit;
-        atualizarDisplay();
+      if (numeroDigitado.length >= 2) return;
 
-        const opcao = document.querySelector(
-          `.option[data-choice="${numeroDigitado}"]`
-        );
-
-        if (opcao && ["1", "2", "3"].includes(numeroDigitado)) {
-          opcao.click();
-          display.textContent =
-            `Opção ${numeroDigitado} selecionada. Aperte CONFIRMA para continuar.`;
-        }
-      }
+      numeroDigitado += botao.dataset.digit;
+      atualizarDisplay();
     });
   });
-  
 
   corrige.addEventListener("click", () => {
     numeroDigitado = "";
+    selectedChoice = null;
+
+    options.forEach(botao => {
+      botao.classList.remove("selected");
+      botao.setAttribute("aria-pressed", "false");
+    });
+
     atualizarDisplay();
-    const feedback = document.getElementById("feedback");
-    if (feedback) feedback.textContent = "Seleção numérica limpa.";
+
+    if (feedback) {
+      feedback.textContent =
+        "Seleção apagada. Digite 22 ou 13, ou escolha branco/nulo.";
+    }
   });
 
   confirma.addEventListener("click", () => {
     const opcoes = {
-      "1": "1",
-      "2": "2",
-      "3": "3"
+      "22": "1",
+      "13": "2"
     };
 
+    if (!numeroDigitado && selectedChoice === "blank") {
+      display.textContent =
+        "Voto em branco selecionado. Use CONFIRMAR VOTO FICTÍCIO para registrar.";
+      return;
+    }
+
+    if (!numeroDigitado && selectedChoice === "null") {
+      display.textContent =
+        "Voto nulo selecionado. Use CONFIRMAR VOTO FICTÍCIO para registrar.";
+      return;
+    }
+
     if (!Object.prototype.hasOwnProperty.call(opcoes, numeroDigitado)) {
-      display.textContent = "Digite 1, 2 ou 3. Opção fictícia.";
+      display.textContent =
+        "Número inválido. Digite 22 para Flávio ou 13 para Lula.";
       return;
     }
 
@@ -172,7 +183,8 @@ renderResults();
 
     if (botaoOpcao) {
       botaoOpcao.click();
-      display.textContent = `Opção ${numeroDigitado} selecionada. Use CONFIRMAR VOTO FICTÍCIO para registrar.`;
+      display.textContent =
+        `Número ${numeroDigitado} selecionado. Use CONFIRMAR VOTO FICTÍCIO para registrar.`;
     }
   });
 })();
