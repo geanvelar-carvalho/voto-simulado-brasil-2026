@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -42,43 +41,31 @@
         <div class="options" id="options" role="group" aria-label="Opções fictícias">
           <button class="option" data-choice="1" aria-pressed="false" type="button">
             <span class="option-number">22</span>
-            <span>
-              <strong>Flávio Bolsonaro</strong>
-              <small>Simulação fictícia</small>
-            </span>
+            <span><strong>Flávio Bolsonaro</strong><small>Simulação fictícia</small></span>
             <span class="radio-dot"></span>
           </button>
 
           <button class="option" data-choice="2" aria-pressed="false" type="button">
             <span class="option-number">13</span>
-            <span>
-              <strong>Luiz Inácio Lula da Silva</strong>
-              <small>Simulação fictícia</small>
-            </span>
+            <span><strong>Luiz Inácio Lula da Silva</strong><small>Simulação fictícia</small></span>
             <span class="radio-dot"></span>
           </button>
 
           <button class="option" data-choice="blank" aria-pressed="false" type="button">
             <span class="option-number">—</span>
-            <span>
-              <strong>BRANCO</strong>
-              <small>Voto em branco simulado</small>
-            </span>
+            <span><strong>BRANCO</strong><small>Voto em branco simulado</small></span>
             <span class="radio-dot"></span>
           </button>
 
           <button class="option" data-choice="null" aria-pressed="false" type="button">
             <span class="option-number">—</span>
-            <span>
-              <strong>NULO</strong>
-              <small>Voto nulo simulado</small>
-            </span>
+            <span><strong>NULO</strong><small>Voto nulo simulado</small></span>
             <span class="radio-dot"></span>
           </button>
         </div>
 
         <div class="urna-display" id="urnaDisplay" aria-live="polite">
-          Digite 22 ou 13. Branco e nulo podem ser escolhidos acima.
+          Digite 22 ou 13. Use BRANCO ou NULO para essas opções.
         </div>
 
         <div class="urna-keypad" id="urnaKeypad" aria-label="Teclado numérico simulado">
@@ -96,6 +83,8 @@
           <span></span>
           <button type="button" class="urna-key urna-key-correct" id="urnaCorrige">CORRIGE</button>
           <button type="button" class="urna-key urna-key-confirm" id="urnaConfirma">CONFIRMA</button>
+          <button type="button" class="urna-key" id="urnaBranco">BRANCO</button>
+          <button type="button" class="urna-key" id="urnaNulo">NULO</button>
         </div>
 
         <div class="actions">
@@ -113,7 +102,6 @@
           <span>VOTO SIMULADO</span>
           <span class="screen-status">● DEMO</span>
         </div>
-
         <div class="screen-content">
           <div class="screen-icon" aria-hidden="true">✓</div>
           <h2>Seu voto, sua escolha</h2>
@@ -134,7 +122,6 @@
         </div>
         <button class="text-button" id="resetBtn" type="button">Zerar dados locais</button>
       </div>
-
       <p class="muted">Os dados ficam somente neste navegador. Não são um resultado nacional, uma pesquisa científica nem uma contagem entre visitantes do site.</p>
       <div id="resultsList" class="results-list"></div>
     </section>
