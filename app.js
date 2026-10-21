@@ -110,7 +110,6 @@ if (PIX_KEY.trim()) {
 renderResults();
 
 /* Teclado numérico da urna simulada */
-/* Teclado numérico da urna simulada */
 (() => {
   const display = document.getElementById("urnaDisplay");
   const keypad = document.getElementById("urnaKeypad");
