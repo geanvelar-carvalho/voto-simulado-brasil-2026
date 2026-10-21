@@ -5,12 +5,13 @@
  */
 const PIX_KEY = "70df6774-9247-464e-b627-f098e87d73b7";
 const STORAGE_KEY = "votoSimuladoBrasil.v1";
-const choices = [ const choices = [
-  { id: "1", label: "Flávio Bolsonaro" },
-  { id: "2", label: "Luiz Inácio Lula da Silva" },
+const choices = [const choices = [
+  { id: "1", label: "Flávio Bolsonaro — 22" },
+  { id: "2", label: "Luiz Inácio Lula da Silva — 13" },
   { id: "blank", label: "Voto em branco" },
   { id: "null", label: "Voto nulo" }
 ];
+  
 
 let selectedChoice = "1";
 const options = [...document.querySelectorAll(".option")];
