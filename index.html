@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123d2b">
+  <meta name="description" content="Voto Simulado Brasil — experiência independente de votação fictícia.">
+  <title>Voto Simulado Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">VS</div>
+    <div>
+      <p class="eyebrow">PROJETO INDEPENDENTE</p>
+      <h1>Voto Simulado Brasil</h1>
+    </div>
+  </header>
+
+  <main>
+    <section class="notice" role="note">
+      <strong>Simulação independente.</strong> Este site não é oficial, não tem vínculo com o TSE ou a Justiça Eleitoral e não realiza votação real. Todos os nomes e opções abaixo são fictícios.
+    </section>
+
+    <section class="intro">
+      <h2>Participe da simulação</h2>
+      <p>Escolha uma opção fictícia, confirme seu voto e veja o resultado demonstrativo das participações registradas neste navegador.</p>
+    </section>
+
+    <section class="voting-layout" aria-label="Urna simulada">
+      <div class="ballot">
+        <div class="ballot-heading">
+          <span class="led" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">ELEIÇÃO FICTÍCIA</p>
+            <h2>Escolha uma opção</h2>
+          </div>
+        </div>
+        <div class="options" id="options" role="group" aria-label="Opções fictícias">
+          <button class="option selected" data-choice="1" aria-pressed="true">
+            <span class="option-number">01</span><span><strong>Opção Aurora</strong><small>Proposta fictícia A</small></span><span class="radio-dot"></span>
+          </button>
+          <button class="option" data-choice="2" aria-pressed="false">
+            <span class="option-number">02</span><span><strong>Opção Horizonte</strong><small>Proposta fictícia B</small></span><span class="radio-dot"></span>
+          </button>
+          <button class="option" data-choice="3" aria-pressed="false">
+            <span class="option-number">03</span><span><strong>Opção Semente</strong><small>Proposta fictícia C</small></span><span class="radio-dot"></span>
+          </button>
+          <button class="option" data-choice="blank" aria-pressed="false">
+            <span class="option-number">—</span><span><strong>Voto em branco</strong><small>Opção de demonstração</small></span><span class="radio-dot"></span>
+          </button>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="clearBtn" type="button">Limpar seleção</button>
+          <button class="btn btn-primary" id="confirmBtn" type="button">Confirmar voto fictício</button>
+        </div>
+        <p class="feedback" id="feedback" role="status" aria-live="polite">Selecione uma opção e confirme para registrar sua participação neste navegador.</p>
+      </div>
+
+      <aside class="screen" aria-label="Painel da simulação">
+        <div class="screen-top"><span>VOTO SIMULADO</span><span class="screen-status">● DEMO</span></div>
+        <div class="screen-content">
+          <div class="screen-icon" aria-hidden="true">✓</div>
+          <h2>Seu voto, sua escolha</h2>
+          <p>Uma experiência demonstrativa. Nenhum voto é transmitido a órgãos públicos.</p>
+          <div class="screen-rule"></div>
+          <p class="screen-small">PARTICIPAÇÕES NESTE DISPOSITIVO</p>
+          <strong class="counter" id="totalCount">0</strong>
+          <p class="screen-small">O total é local e pode ser apagado pelo navegador. Não representa pesquisa eleitoral.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="results" aria-labelledby="resultsTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">PAINEL DEMONSTRATIVO</p><h2 id="resultsTitle">Participações neste navegador</h2></div>
+        <button class="text-button" id="resetBtn" type="button">Zerar dados locais</button>
+      </div>
+      <p class="muted">Os dados ficam somente neste navegador. Não são um resultado nacional, uma pesquisa científica nem uma contagem entre visitantes do site.</p>
+      <div id="resultsList" class="results-list"></div>
+    </section>
+
+    <section class="support" id="apoio">
+      <div class="support-copy">
+        <p class="eyebrow">APOIO VOLUNTÁRIO</p>
+        <h2>Ajude a manter o projeto no ar</h2>
+        <p>Se você gostou da experiência, pode contribuir voluntariamente com os custos de hospedagem, manutenção e melhorias. Usar a simulação é gratuito e não depende de contribuição.</p>
+        <p class="support-transparency">As contribuições são destinadas ao responsável pelo projeto, não ao TSE ou a qualquer órgão público.</p>
+      </div>
+      <div class="pix-card">
+        <div class="pix-symbol" aria-hidden="true">✳</div>
+        <h3>Contribuir via Pix</h3>
+        <p id="pixStatus">O responsável pelo projeto ainda precisa configurar a chave Pix neste arquivo.</p>
+        <div id="pixActions" hidden>
+          <code id="pixKeyDisplay"></code>
+          <button class="btn btn-primary" id="copyPixBtn" type="button">Copiar chave Pix</button>
+        </div>
+        <p class="tiny">Antes de enviar, confira no aplicativo do seu banco o nome do destinatário e o valor. Contribuição opcional.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Voto Simulado Brasil</strong> · Projeto independente e demonstrativo.</p>
+    <p>Não oficial. Não vinculado ao Tribunal Superior Eleitoral (TSE). Não coleta nem transmite votos reais.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
