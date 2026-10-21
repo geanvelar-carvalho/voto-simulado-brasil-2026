@@ -50,6 +50,27 @@
             <span class="option-number">—</span><span><strong>Voto em branco</strong><small>Opção de demonstração</small></span><span class="radio-dot"></span>
           </button>
         </div>
+        <div class="urna-display" id="urnaDisplay" aria-live="polite">
+          Digite o número da opção fictícia
+        </div>
+
+        <div class="urna-keypad" id="urnaKeypad" aria-label="Teclado numérico simulado">
+          <button type="button" class="urna-key" data-digit="1">1</button>
+          <button type="button" class="urna-key" data-digit="2">2</button>
+          <button type="button" class="urna-key" data-digit="3">3</button>
+          <button type="button" class="urna-key" data-digit="4">4</button>
+          <button type="button" class="urna-key" data-digit="5">5</button>
+          <button type="button" class="urna-key" data-digit="6">6</button>
+          <button type="button" class="urna-key" data-digit="7">7</button>
+          <button type="button" class="urna-key" data-digit="8">8</button>
+          <button type="button" class="urna-key" data-digit="9">9</button>
+          <span></span>
+          <button type="button" class="urna-key" data-digit="0">0</button>
+          <span></span>
+          <button type="button" class="urna-key urna-key-correct" id="urnaCorrige">CORRIGE</button>
+          <button type="button" class="urna-key urna-key-confirm" id="urnaConfirma">CONFIRMA</button>
+        </div>
+        
         <div class="actions">
           <button class="btn btn-secondary" id="clearBtn" type="button">Limpar seleção</button>
           <button class="btn btn-primary" id="confirmBtn" type="button">Confirmar voto fictício</button>
