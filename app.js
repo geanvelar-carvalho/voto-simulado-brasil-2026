@@ -9,7 +9,8 @@ const choices = [
   { id: "1", label: "Opção Aurora" },
   { id: "2", label: "Opção Horizonte" },
   { id: "3", label: "Opção Semente" },
-  { id: "blank", label: "Voto em branco" }
+   { id: "blank", label: "Voto em branco" },
+  { id: "null", label: "Voto nulo" }
 ];
 
 let selectedChoice = "1";
