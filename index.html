@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -21,7 +20,7 @@
   <main>
     <section class="notice" role="note">
       <strong>Simulação independente.</strong>
-      Este site não é oficial, não tem vínculo com o TSE ou a Justiça Eleitoral e não realiza votação real. Os candidatos são pessoas reais apresentados exclusivamente para uma simulação fictícia. Os resultados são demonstrativos e não representam uma pesquisa eleitoral.
+      Este site não é oficial, não tem vínculo com o TSE ou a Justiça Eleitoral e não realiza votação real. Os candidatos são apresentados exclusivamente para uma simulação fictícia. Os resultados são demonstrativos e não representam uma pesquisa eleitoral.
     </section>
 
     <section class="intro">
@@ -40,15 +39,9 @@
         </div>
 
         <div class="options" id="options" role="group" aria-label="Opções fictícias">
-
-          <!-- FLÁVIO BOLSONARO -->
           <button class="option" data-choice="1" aria-pressed="false" type="button">
             <span class="option-number">22</span>
-            <img
-              class="candidate-photo"
-              src="images/Screenshot_2026-10-21-22-10-01-051_com.openai.chatgpt.jpg"
-              alt="Foto de Flávio Bolsonaro"
-            >
+            <img class="candidate-photo" src="images/Screenshot_2026-10-21-22-10-01-051_com.openai.chatgpt.jpg" alt="Foto de Flávio Bolsonaro">
             <span class="candidate-info">
               <strong>Flávio Bolsonaro</strong>
               <small>Simulação fictícia</small>
@@ -56,14 +49,9 @@
             <span class="radio-dot"></span>
           </button>
 
-          <!-- LUIZ INÁCIO LULA DA SILVA -->
           <button class="option" data-choice="2" aria-pressed="false" type="button">
             <span class="option-number">13</span>
-            <img
-              class="candidate-photo"
-              src="images/Screenshot_2026-10-21-22-10-05-868_com.openai.chatgpt.jpg"
-              alt="Foto de Luiz Inácio Lula da Silva"
-            >
+            <img class="candidate-photo" src="images/Screenshot_2026-10-21-22-10-05-868_com.openai.chatgpt.jpg" alt="Foto de Luiz Inácio Lula da Silva">
             <span class="candidate-info">
               <strong>Luiz Inácio Lula da Silva</strong>
               <small>Simulação fictícia</small>
@@ -71,7 +59,6 @@
             <span class="radio-dot"></span>
           </button>
 
-          <!-- VOTO EM BRANCO -->
           <button class="option" data-choice="blank" aria-pressed="false" type="button">
             <span class="option-number">—</span>
             <span class="candidate-info">
@@ -81,7 +68,6 @@
             <span class="radio-dot"></span>
           </button>
 
-          <!-- VOTO NULO -->
           <button class="option" data-choice="null" aria-pressed="false" type="button">
             <span class="option-number">—</span>
             <span class="candidate-info">
@@ -130,14 +116,23 @@
           <span>VOTO SIMULADO</span>
           <span class="screen-status">● DEMO</span>
         </div>
+
         <div class="screen-content">
-          <div class="screen-icon" aria-hidden="true">✓</div>
-          <h2>Seu voto, sua escolha</h2>
-          <p>Uma experiência demonstrativa. Nenhuma participação é transmitida a órgãos públicos.</p>
+          <div class="candidate-preview" id="candidatePreview">
+            <p class="screen-small" id="previewPrompt">SIMULAÇÃO DE VOTO</p>
+            <div class="preview-photo-frame">
+              <img id="previewPhoto" src="" alt="" hidden>
+              <div id="previewPlaceholder" class="preview-placeholder" aria-hidden="true">VS</div>
+            </div>
+            <h2 id="previewName">AGUARDANDO ESCOLHA</h2>
+            <p class="preview-number" id="previewNumber">Número: --</p>
+            <p class="preview-status" id="previewStatus">SIMULAÇÃO FICTÍCIA</p>
+          </div>
+
           <div class="screen-rule"></div>
           <p class="screen-small">PARTICIPAÇÕES NESTE DISPOSITIVO</p>
           <strong class="counter" id="totalCount">0</strong>
-          <p class="screen-small">O total é local e pode ser apagado pelo navegador. Não representa pesquisa eleitoral.</p>
+          <p class="screen-small">Total local deste navegador. Não representa pesquisa eleitoral.</p>
         </div>
       </aside>
     </section>
@@ -158,56 +153,23 @@
       <div class="support-copy">
         <p class="eyebrow">❤️ APOIE ESTA INICIATIVA</p>
         <h2>De coração para coração: ajude a manter o projeto no ar!</h2>
-
-        <p>
-          Este projeto nasceu da vontade de criar um espaço independente
-          para a participação popular. Para continuar no ar, ele precisa
-          de dedicação, manutenção e recursos.
-        </p>
-
-        <p>
-          🇧🇷 <strong>Você pode fazer parte dessa história!</strong>
-          Se gostar da iniciativa e puder ajudar, contribua com R$ 1,
-          R$ 5 ou qualquer valor que vier do seu coração.
-        </p>
-
-        <p>
-          Às vezes, um pequeno gesto faz uma grande diferença.
-          Cada contribuição voluntária ajuda a custear a hospedagem,
-          a manutenção e as melhorias do Voto Simulado Brasil.
-        </p>
-
-        <p>
-          Se não puder contribuir financeiramente, não tem problema!
-          Sua participação e o compartilhamento do projeto também
-          são formas valiosas de ajudar.
-        </p>
-
+        <p>Este projeto nasceu da vontade de criar um espaço independente para a participação popular. Para continuar no ar, ele precisa de dedicação, manutenção e recursos.</p>
+        <p>🇧🇷 <strong>Você pode fazer parte dessa história!</strong> Se gostar da iniciativa e puder ajudar, contribua com R$ 1, R$ 5 ou qualquer valor que vier do seu coração.</p>
+        <p>Às vezes, um pequeno gesto faz uma grande diferença. Cada contribuição voluntária ajuda a custear a hospedagem, a manutenção e as melhorias do Voto Simulado Brasil.</p>
+        <p>Se não puder contribuir financeiramente, não tem problema! Sua participação e o compartilhamento do projeto também são formas valiosas de ajudar.</p>
         <p><strong>Muito obrigado por acreditar e fazer parte dessa iniciativa! ❤️</strong></p>
-
-        <p class="support-transparency">
-          As contribuições são voluntárias e destinadas ao responsável
-          pelo projeto. Não são pagamentos por votos e não têm vínculo
-          com o TSE ou qualquer órgão público.
-        </p>
+        <p class="support-transparency">As contribuições são voluntárias e destinadas ao responsável pelo projeto. Não são pagamentos por votos e não têm vínculo com o TSE ou qualquer órgão público.</p>
       </div>
 
       <div class="pix-card">
         <div class="pix-symbol" aria-hidden="true">❤️</div>
         <h3>Contribua com o coração</h3>
         <p id="pixStatus">Sua ajuda, de qualquer valor, é bem-vinda!</p>
-
         <div id="pixActions" hidden>
           <code id="pixKeyDisplay"></code>
-          <button class="btn btn-primary" id="copyPixBtn" type="button">
-            Copiar chave Pix
-          </button>
+          <button class="btn btn-primary" id="copyPixBtn" type="button">Copiar chave Pix</button>
         </div>
-
-        <p class="tiny">
-          Contribuição opcional. Antes de confirmar, confira o nome
-          do destinatário e o valor no aplicativo do seu banco.
-        </p>
+        <p class="tiny">Contribuição opcional. Antes de confirmar, confira o nome do destinatário e o valor no aplicativo do seu banco.</p>
       </div>
     </section>
   </main>
