@@ -1,36 +1,38 @@
-  
-/*
- * Voto Simulado Brasil — simulação local.
- * Participações fictícias armazenadas somente neste navegador.
- */
+/* Voto Simulado Brasil — simulação fictícia local.
+
+* Os dados ficam somente neste navegador.
+* Não é votação oficial nem tem vínculo com o TSE.
+  */
+
 const PIX_KEY = "70df6774-9247-464e-b627-f098e87d73b7";
 const STORAGE_KEY = "votoSimuladoBrasil.v1";
+const VOTED_KEY = "votoSimuladoBrasil.participacaoRegistrada.v1";
 
 const choices = [
-  {
-    id: "1",
-    label: "Flávio Bolsonaro",
-    number: "22",
-    image: "images/Screenshot_2026-10-21-22-10-01-051_com.openai.chatgpt.jpg"
-  },
-  {
-    id: "2",
-    label: "Luiz Inácio Lula da Silva",
-    number: "13",
-    image: "images/Screenshot_2026-10-21-22-10-05-868_com.openai.chatgpt.jpg"
-  },
-  { id: "blank", label: "Voto em branco", number: "" },
-  { id: "null", label: "Voto nulo", number: "" }
+{
+id: "1",
+label: "Flávio Bolsonaro",
+number: "22",
+image: "images/Screenshot_2026-10-21-22-10-01-051_com.openai.chatgpt.jpg"
+},
+{
+id: "2",
+label: "Luiz Inácio Lula da Silva",
+number: "13",
+image: "images/Screenshot_2026-10-21-22-10-05-868_com.openai.chatgpt.jpg"
+},
+{ id: "blank", label: "BRANCO", number: "" },
+{ id: "null", label: "NULO", number: "" }
 ];
 
 let selectedChoice = null;
 let urnaNumeroDigitado = "";
+let participacaoRegistrada = localStorage.getItem(VOTED_KEY) === "1";
 
 const options = [...document.querySelectorAll(".option")];
 const feedback = document.getElementById("feedback");
 const totalCount = document.getElementById("totalCount");
 const resultsList = document.getElementById("resultsList");
-
 const urnaDisplay = document.getElementById("urnaDisplay");
 const urnaKeypad = document.getElementById("urnaKeypad");
 const urnaCorrige = document.getElementById("urnaCorrige");
@@ -39,462 +41,485 @@ const urnaBranco = document.getElementById("urnaBranco");
 const urnaNulo = document.getElementById("urnaNulo");
 const confirmBtn = document.getElementById("confirmBtn");
 const clearBtn = document.getElementById("clearBtn");
+const resetBtn = document.getElementById("resetBtn");
 
-/* Cria a área de foto e identificação na tela lateral. */
-const screenContent = document.querySelector(".screen-content");
-let preview = null;
-
-if (screenContent) {
-  const style = document.createElement("style");
-  style.textContent = `
-    .candidate-preview {
-      margin: 14px auto;
-      padding: 14px;
-      border: 1px solid #b9d4c3;
-      border-radius: 12px;
-      background: rgba(18, 61, 43, 0.07);
-      text-align: center;
-    }
-    .candidate-preview img {
-      display: none;
-      width: 112px;
-      height: 132px;
-      object-fit: cover;
-      object-position: center top;
-      border-radius: 10px;
-      border: 2px solid #b9d4c3;
-      margin: 0 auto 10px;
-    }
-    .candidate-preview .preview-placeholder {
-      display: block;
-      font-size: 38px;
-      margin: 8px;
-    }
-    .candidate-preview strong {
-      display: block;
-      overflow-wrap: anywhere;
-      margin-bottom: 5px;
-    }
-    .candidate-preview small {
-      display: block;
-      line-height: 1.4;
-    }
-    .candidate-preview .preview-number {
-      font-size: 24px;
-      font-weight: 800;
-      margin: 5px 0;
-    }
-  `;
-  document.head.appendChild(style);
-
-  preview = document.createElement("div");
-  preview.className = "candidate-preview";
-  preview.setAttribute("aria-live", "polite");
-  preview.innerHTML = `
-    <span class="preview-placeholder">🗳️</span>
-    <img alt="" />
-    <strong class="preview-name">Nenhuma opção selecionada</strong>
-    <div class="preview-number"></div>
-    <small class="preview-status">Escolha uma opção na urna simulada.</small>
-  `;
-
-  const screenIcon = screenContent.querySelector(".screen-icon");
-  if (screenIcon) {
-    screenContent.insertBefore(preview, screenIcon);
-  } else {
-    screenContent.prepend(preview);
-  }
-}
+/* Elementos da telinha já existentes no index.html. */
+const previewPhoto = document.getElementById("previewPhoto");
+const previewPlaceholder = document.getElementById("previewPlaceholder");
+const previewName = document.getElementById("previewName");
+const previewNumber = document.getElementById("previewNumber");
+const previewStatus = document.getElementById("previewStatus");
+const previewPrompt = document.getElementById("previewPrompt");
 
 function loadCounts() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    return Object.fromEntries(
-      choices.map(choice => [
-        choice.id,
-        Math.max(0, Number(parsed[choice.id]) || 0)
-      ])
-    );
-  } catch {
-    return Object.fromEntries(choices.map(choice => [choice.id, 0]));
-  }
+try {
+const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+return Object.fromEntries(
+choices.map(choice => [
+choice.id,
+Math.max(0, Number(parsed[choice.id]) || 0)
+])
+);
+} catch {
+return Object.fromEntries(choices.map(choice => [choice.id, 0]));
+}
 }
 
 function saveCounts(counts) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
-    return true;
-  } catch {
-    if (feedback) {
-      feedback.textContent =
-        "Não foi possível salvar neste navegador. A participação não foi registrada.";
-    }
-    return false;
-  }
+try {
+localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
+return true;
+} catch {
+if (feedback) {
+feedback.textContent =
+"Não foi possível salvar os dados neste navegador.";
+}
+return false;
+}
 }
 
 function renderResults() {
-  const counts = loadCounts();
-  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+const counts = loadCounts();
+const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
-  if (totalCount) totalCount.textContent = total;
-  if (!resultsList) return;
+if (totalCount) totalCount.textContent = total;
+if (!resultsList) return;
 
-  resultsList.innerHTML = "";
+resultsList.innerHTML = "";
 
-  choices.forEach(choice => {
-    const count = counts[choice.id];
-    const percent = total ? Math.round((count / total) * 100) : 0;
+choices.forEach(choice => {
+const count = counts[choice.id];
+const percent = total ? (count / total) * 100 : 0;
 
-    const row = document.createElement("div");
-    row.className = "result-row";
+const row = document.createElement("div");
+row.className = "result-row";
 
-    const label = document.createElement("strong");
-    label.textContent = choice.id === "1"
-      ? `${choice.label} — 22`
-      : choice.id === "2"
-        ? `${choice.label} — 13`
-        : choice.label;
+const label = document.createElement("strong");
+label.textContent =
+  choice.id === "1" ? `${choice.label} — 22` :
+  choice.id === "2" ? `${choice.label} — 13` :
+  choice.label;
 
-    const track = document.createElement("div");
-    track.className = "bar-track";
-    track.setAttribute("aria-label", `${percent}%`);
+const track = document.createElement("div");
+track.className = "bar-track";
+track.setAttribute(
+  "aria-label",
+  `${percent.toFixed(1).replace(".", ",")}%`
+);
 
-    const fill = document.createElement("div");
-    fill.className = "bar-fill";
-    fill.style.width = `${percent}%`;
-    track.appendChild(fill);
+const fill = document.createElement("div");
+fill.className = "bar-fill";
+fill.style.width = `${percent}%`;
+track.appendChild(fill);
 
-    const value = document.createElement("span");
-    value.className = "result-value";
-    value.textContent = count;
+const value = document.createElement("span");
+value.className = "result-value";
+value.textContent = `${count} (${percent.toFixed(1).replace(".", ",")}%)`;
 
-    row.append(label, track, value);
-    resultsList.appendChild(row);
-  });
+row.append(label, track, value);
+resultsList.appendChild(row);
+
+});
 }
 
-/* Som curto de finalização, gerado pelo próprio navegador. */
-function tocarSomFinalizado() {
-  try {
-    const AudioContextClass =
-      window.AudioContext || window.webkitAudioContext;
+/* Atualiza a telinha com foto, nome e número ao digitar. */
+function atualizarPrevia(choice) {
+if (!previewName) return;
 
-    if (!AudioContextClass) return;
-
-    const audio = new AudioContextClass();
-
-    audio.resume().then(() => {
-      const agora = audio.currentTime;
-
-      [880, 1175].forEach((frequencia, indice) => {
-        const oscillator = audio.createOscillator();
-        const volume = audio.createGain();
-        const inicio = agora + indice * 0.16;
-
-        oscillator.type = "sine";
-        oscillator.frequency.value = frequencia;
-
-        volume.gain.setValueAtTime(0.0001, inicio);
-        volume.gain.exponentialRampToValueAtTime(0.18, inicio + 0.02);
-        volume.gain.exponentialRampToValueAtTime(0.0001, inicio + 0.13);
-
-        oscillator.connect(volume);
-        volume.connect(audio.destination);
-
-        oscillator.start(inicio);
-        oscillator.stop(inicio + 0.14);
-      });
-
-      window.setTimeout(() => audio.close().catch(() => {}), 700);
-    }).catch(() => {});
-  } catch {
-    // O navegador pode não permitir áudio; a simulação continua funcionando.
-  }
+if (previewPhoto) {
+previewPhoto.hidden = true;
+previewPhoto.removeAttribute("src");
+previewPhoto.alt = "";
 }
 
-function atualizarPrevia() {
-  if (!preview) return;
+if (previewPlaceholder) {
+previewPlaceholder.hidden = false;
+previewPlaceholder.textContent = "VS";
+}
 
-  const chosen = choices.find(choice => choice.id === selectedChoice);
-  const img = preview.querySelector("img");
-  const placeholder = preview.querySelector(".preview-placeholder");
-  const name = preview.querySelector(".preview-name");
-  const number = preview.querySelector(".preview-number");
-  const status = preview.querySelector(".preview-status");
+if (!choice) {
+previewName.textContent = "AGUARDANDO ESCOLHA";
+if (previewNumber) previewNumber.textContent = "Número: --";
+if (previewStatus) previewStatus.textContent = "SIMULAÇÃO FICTÍCIA";
+if (previewPrompt) previewPrompt.textContent = "SIMULAÇÃO DE VOTO";
+return;
+}
 
-  if (!chosen) {
-    img.style.display = "none";
-    img.removeAttribute("src");
-    placeholder.style.display = "block";
-    name.textContent = "Nenhuma opção selecionada";
-    number.textContent = "";
-    status.textContent = "Escolha uma opção na urna simulada.";
-    return;
-  }
+previewName.textContent = choice.label;
+if (previewNumber) {
+previewNumber.textContent = choice.number
+? "Número: ${choice.number}"
+: "Opção sem número";
+}
+if (previewStatus) previewStatus.textContent = "SIMULAÇÃO FICTÍCIA";
+if (previewPrompt) previewPrompt.textContent = "OPÇÃO SELECIONADA";
 
-  name.textContent = chosen.label;
-  number.textContent = chosen.number ? `Número ${chosen.number}` : "";
-  status.textContent = "Opção selecionada — simulação fictícia.";
-
-  if (chosen.image) {
-    img.onerror = () => {
-      img.style.display = "none";
-      placeholder.style.display = "block";
-      placeholder.textContent = "📷";
-      status.textContent =
-        "Foto indisponível. Confira o arquivo na pasta images.";
-    };
-    img.onload = () => {
-      img.style.display = "block";
-      placeholder.style.display = "none";
-    };
-    img.src = chosen.image;
-    img.alt = `Foto de ${chosen.label}`;
-  } else {
-    img.style.display = "none";
-    img.removeAttribute("src");
-    placeholder.style.display = "block";
-    placeholder.textContent = chosen.id === "blank" ? "⬜" : "🚫";
-  }
+if (choice.image && previewPhoto) {
+previewPhoto.alt = "Foto de ${choice.label}";
+previewPhoto.onload = () => {
+previewPhoto.hidden = false;
+if (previewPlaceholder) previewPlaceholder.hidden = true;
+};
+previewPhoto.onerror = () => {
+previewPhoto.hidden = true;
+if (previewPlaceholder) {
+previewPlaceholder.hidden = false;
+previewPlaceholder.textContent = "Foto indisponível";
+}
+};
+previewPhoto.src = choice.image;
+} else if (previewPlaceholder) {
+previewPlaceholder.textContent = choice.id === "blank" ? "BRANCO" : "NULO";
+}
 }
 
 function atualizarDisplay(mensagem) {
-  if (!urnaDisplay) return;
+if (!urnaDisplay) return;
 
-  if (mensagem) {
-    urnaDisplay.textContent = mensagem;
-    return;
-  }
+if (mensagem) {
+urnaDisplay.textContent = mensagem;
+return;
+}
 
-  if (urnaNumeroDigitado) {
-    urnaDisplay.textContent = `Número digitado: ${urnaNumeroDigitado}`;
-    return;
-  }
+if (urnaNumeroDigitado) {
+urnaDisplay.textContent = "Número digitado: ${urnaNumeroDigitado}";
+return;
+}
 
-  const chosen = choices.find(choice => choice.id === selectedChoice);
-
-  urnaDisplay.textContent = chosen
-    ? `Selecionado: ${chosen.label}${chosen.number ? ` — ${chosen.number}` : ""}`
-    : "Digite 22 ou 13, ou escolha BRANCO/NULO.";
+const chosen = choices.find(choice => choice.id === selectedChoice);
+urnaDisplay.textContent = chosen
+? "Selecionado: ${chosen.label}${chosen.number ? " — ${chosen.number}" : ""}"
+: "Digite 22 ou 13, ou escolha BRANCO/NULO.";
 }
 
 function setSelected(id) {
-  selectedChoice = id;
+if (participacaoRegistrada) return;
 
-  options.forEach(button => {
-    const active = button.dataset.choice === id;
-    button.classList.toggle("selected", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
+selectedChoice = id;
 
-  const chosen = choices.find(choice => choice.id === id);
-  if (feedback && chosen) {
-    feedback.textContent =
-      `${chosen.label}${chosen.number ? ` — ${chosen.number}` : ""} selecionado. Confira a tela e confirme a participação fictícia no botão verde.`;
-  }
+options.forEach(button => {
+const active = button.dataset.choice === id;
+button.classList.toggle("selected", active);
+button.setAttribute("aria-pressed", String(active));
+});
 
-  atualizarPrevia();
+const chosen = choices.find(choice => choice.id === id);
+atualizarPrevia(chosen);
+
+if (feedback && chosen) {
+feedback.textContent =
+"${chosen.label}${chosen.number ? " — ${chosen.number}" : ""} selecionado. Confira a telinha.";
+}
 }
 
 function clearSelection() {
-  selectedChoice = null;
+if (participacaoRegistrada) return;
 
-  options.forEach(button => {
-    button.classList.remove("selected");
-    button.setAttribute("aria-pressed", "false");
-  });
-
-  atualizarPrevia();
+selectedChoice = null;
+options.forEach(button => {
+button.classList.remove("selected");
+button.setAttribute("aria-pressed", "false");
+});
+atualizarPrevia(null);
 }
 
-/* Seleção pelas opções da página. */
-options.forEach(button => {
-  button.addEventListener("click", () => {
-    urnaNumeroDigitado = "";
-    setSelected(button.dataset.choice);
-    atualizarDisplay();
+function tocarSomFinalizado() {
+try {
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+if (!AudioContextClass) return;
+
+const audio = new AudioContextClass();
+
+audio.resume().then(() => {
+  const agora = audio.currentTime;
+
+  [880, 1175, 1568].forEach((frequencia, indice) => {
+    const oscillator = audio.createOscillator();
+    const volume = audio.createGain();
+    const inicio = agora + indice * 0.17;
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = frequencia;
+
+    volume.gain.setValueAtTime(0.0001, inicio);
+    volume.gain.exponentialRampToValueAtTime(0.16, inicio + 0.02);
+    volume.gain.exponentialRampToValueAtTime(0.0001, inicio + 0.13);
+
+    oscillator.connect(volume);
+    volume.connect(audio.destination);
+    oscillator.start(inicio);
+    oscillator.stop(inicio + 0.14);
   });
+
+  window.setTimeout(() => audio.close().catch(() => {}), 800);
+}).catch(() => {});
+
+} catch {
+/* O navegador pode bloquear áudio sem impedir o funcionamento do site. */
+}
+}
+
+function atualizarEstadoBloqueio() {
+if (!participacaoRegistrada) return;
+
+options.forEach(button => {
+button.disabled = true;
+button.setAttribute("aria-disabled", "true");
 });
 
-/* Limpar seleção. */
+if (urnaKeypad) {
+urnaKeypad.querySelectorAll("button").forEach(button => {
+button.disabled = true;
+});
+}
+
+if (confirmBtn) confirmBtn.disabled = true;
+if (clearBtn) clearBtn.disabled = true;
+if (urnaDisplay) {
+urnaDisplay.textContent = "PARTICIPAÇÃO JÁ REGISTRADA NESTE NAVEGADOR";
+}
+if (feedback) {
+feedback.textContent =
+"Esta simulação já foi concluída neste navegador. Os dados são locais e não representam votação real.";
+}
+if (previewStatus) {
+previewStatus.textContent = "PARTICIPAÇÃO FICTÍCIA JÁ REGISTRADA";
+}
+}
+
+options.forEach(button => {
+button.addEventListener("click", () => {
+if (participacaoRegistrada) return;
+urnaNumeroDigitado = "";
+setSelected(button.dataset.choice);
+atualizarDisplay();
+});
+});
+
 if (clearBtn) {
-  clearBtn.addEventListener("click", () => {
-    urnaNumeroDigitado = "";
-    clearSelection();
-    atualizarDisplay();
-
-    if (feedback) {
-      feedback.textContent =
-        "Seleção limpa. Escolha uma opção antes de confirmar.";
-    }
-  });
+clearBtn.addEventListener("click", () => {
+if (participacaoRegistrada) return;
+urnaNumeroDigitado = "";
+clearSelection();
+atualizarDisplay();
+if (feedback) feedback.textContent = "Seleção limpa. Escolha uma opção.";
+});
 }
 
-/* Somente o botão verde registra uma participação fictícia. */
+function registrarParticipacao() {
+if (participacaoRegistrada) {
+atualizarEstadoBloqueio();
+return;
+}
+
+if (!selectedChoice) {
+if (feedback) feedback.textContent =
+"Escolha uma opção antes de confirmar a participação fictícia.";
+return;
+}
+
+const chosen = choices.find(choice => choice.id === selectedChoice);
+const counts = loadCounts();
+counts[selectedChoice] = (counts[selectedChoice] || 0) + 1;
+
+/* Grava primeiro os resultados e o bloqueio local. */
+if (!saveCounts(counts)) return;
+
+try {
+localStorage.setItem(VOTED_KEY, "1");
+} catch {
+if (feedback) {
+feedback.textContent =
+"Não foi possível guardar o bloqueio neste navegador. A participação não foi finalizada.";
+}
+return;
+}
+
+participacaoRegistrada = true;
+renderResults();
+tocarSomFinalizado();
+
+if (feedback) {
+feedback.textContent =
+"Participação fictícia registrada: ${chosen.label}. Esta simulação é local.";
+}
+
+if (urnaDisplay) {
+urnaDisplay.textContent = "✓ FINALIZADO — SIMULAÇÃO FICTÍCIA";
+}
+
+if (previewStatus) {
+previewStatus.textContent = "✓ PARTICIPAÇÃO FICTÍCIA FINALIZADA";
+}
+
+atualizarEstadoBloqueio();
+}
+
 if (confirmBtn) {
-  confirmBtn.addEventListener("click", () => {
-    if (!selectedChoice) {
-      if (feedback) feedback.textContent =
-        "Escolha uma opção antes de confirmar.";
-      return;
-    }
-
-    const chosen = choices.find(choice => choice.id === selectedChoice);
-    const counts = loadCounts();
-    counts[selectedChoice] = (counts[selectedChoice] || 0) + 1;
-
-    if (!saveCounts(counts)) return;
-
-    renderResults();
-    tocarSomFinalizado();
-
-    if (feedback) {
-      feedback.textContent =
-        `Bip! Participação fictícia registrada: ${chosen.label}. Os dados ficam apenas neste navegador.`;
-    }
-
-    if (urnaDisplay) {
-      urnaDisplay.textContent = "✓ FINALIZADO — SIMULAÇÃO FICTÍCIA";
-    }
-
-    if (preview) {
-      preview.querySelector(".preview-status").textContent =
-        "✓ Participação fictícia finalizada.";
-    }
-  });
-}
-
-/* Zerar resultados locais. */
-const resetBtn = document.getElementById("resetBtn");
-
-if (resetBtn) {
-  resetBtn.addEventListener("click", () => {
-    if (!confirm(
-      "Zerar todas as participações salvas neste navegador? Essa ação não pode ser desfeita."
-    )) return;
-
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {}
-
-    renderResults();
-    if (feedback) feedback.textContent = "Os dados locais foram zerados.";
-  });
-}
-
-/* Configuração do Pix. */
-if (PIX_KEY.trim()) {
-  const pixStatus = document.getElementById("pixStatus");
-  const pixKeyDisplay = document.getElementById("pixKeyDisplay");
-  const pixActions = document.getElementById("pixActions");
-  const copyPixBtn = document.getElementById("copyPixBtn");
-
-  if (pixStatus) {
-    pixStatus.textContent =
-      "Chave Pix configurada. Confira o destinatário no aplicativo do seu banco antes de concluir qualquer transferência.";
-  }
-
-  if (pixKeyDisplay) pixKeyDisplay.textContent = PIX_KEY;
-  if (pixActions) pixActions.hidden = false;
-
-  if (copyPixBtn) {
-    copyPixBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(PIX_KEY);
-        copyPixBtn.textContent = "Chave copiada!";
-      } catch {
-        if (pixStatus) {
-          pixStatus.textContent =
-            "Copie manualmente a chave exibida abaixo.";
-        }
-      }
-    });
-  }
-}
-
-/* Teclado da urna simulada. */
-function selecionarPeloTeclado(id) {
-  urnaNumeroDigitado = "";
-  setSelected(id);
-  atualizarDisplay();
+confirmBtn.addEventListener("click", registrarParticipacao);
 }
 
 if (urnaKeypad) {
-  urnaKeypad.querySelectorAll("[data-digit]").forEach(botao => {
-    botao.addEventListener("click", () => {
-      if (urnaNumeroDigitado.length >= 2) return;
+urnaKeypad.querySelectorAll("[data-digit]").forEach(button => {
+button.addEventListener("click", () => {
+if (participacaoRegistrada || urnaNumeroDigitado.length >= 2) return;
 
-      if (urnaNumeroDigitado.length === 0) {
-        clearSelection();
-      }
+  urnaNumeroDigitado += button.dataset.digit;
 
-      urnaNumeroDigitado += botao.dataset.digit;
-      atualizarDisplay();
-    });
-  });
+  const partialChoice = choices.find(choice =>
+    choice.number && choice.number.startsWith(urnaNumeroDigitado)
+  );
+
+  if (partialChoice) {
+    atualizarPrevia(partialChoice);
+    if (previewStatus) {
+      previewStatus.textContent = "DIGITANDO — SIMULAÇÃO FICTÍCIA";
+    }
+  } else {
+    atualizarPrevia(null);
+    if (previewName) previewName.textContent = "NÚMERO DIGITADO";
+    if (previewNumber) previewNumber.textContent = urnaNumeroDigitado;
+    if (previewStatus) previewStatus.textContent = "Confira o número digitado";
+  }
+
+  atualizarDisplay();
+});
+
+});
+}
+
+function selecionarPeloTeclado(id) {
+if (participacaoRegistrada) return;
+urnaNumeroDigitado = "";
+setSelected(id);
+atualizarDisplay();
 }
 
 if (urnaBranco) {
-  urnaBranco.addEventListener("click", () => {
-    selecionarPeloTeclado("blank");
-  });
+urnaBranco.addEventListener("click", () => selecionarPeloTeclado("blank"));
 }
 
 if (urnaNulo) {
-  urnaNulo.addEventListener("click", () => {
-    selecionarPeloTeclado("null");
-  });
+urnaNulo.addEventListener("click", () => selecionarPeloTeclado("null"));
 }
 
 if (urnaCorrige) {
-  urnaCorrige.addEventListener("click", () => {
+urnaCorrige.addEventListener("click", () => {
+if (participacaoRegistrada) return;
+urnaNumeroDigitado = "";
+clearSelection();
+atualizarDisplay("Seleção apagada. Digite 22 ou 13, ou escolha BRANCO/NULO.");
+if (feedback) feedback.textContent = "Seleção apagada.";
+});
+}
+
+if (urnaConfirma) {
+urnaConfirma.addEventListener("click", () => {
+if (participacaoRegistrada) return;
+
+const idsPorNumero = { "22": "1", "13": "2" };
+
+if (urnaNumeroDigitado) {
+  const id = idsPorNumero[urnaNumeroDigitado];
+
+  if (!id) {
     urnaNumeroDigitado = "";
     clearSelection();
-    atualizarDisplay("Seleção apagada. Digite 22 ou 13, ou escolha BRANCO/NULO.");
+    atualizarDisplay("Número inválido. Digite 22 ou 13.");
+    return;
+  }
 
-    if (feedback) {
-      feedback.textContent =
-        "Seleção apagada. Escolha uma opção antes de confirmar.";
-    }
+  selecionarPeloTeclado(id);
+  return;
+}
+
+if (selectedChoice) {
+  atualizarDisplay(
+    "Opção selecionada. Use o botão verde para registrar a participação fictícia."
+  );
+  return;
+}
+
+atualizarDisplay("Nenhuma opção selecionada.");
+
+});
+}
+
+if (resetBtn) {
+resetBtn.addEventListener("click", () => {
+if (!confirm(
+"Zerar os resultados locais? Isso apaga as contagens deste navegador."
+)) return;
+
+try {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(VOTED_KEY);
+} catch {
+  if (feedback) feedback.textContent =
+    "Não foi possível alterar o armazenamento deste navegador.";
+  return;
+}
+
+participacaoRegistrada = false;
+urnaNumeroDigitado = "";
+selectedChoice = null;
+
+options.forEach(button => {
+  button.disabled = false;
+  button.classList.remove("selected");
+  button.setAttribute("aria-pressed", "false");
+  button.removeAttribute("aria-disabled");
+});
+
+if (urnaKeypad) {
+  urnaKeypad.querySelectorAll("button").forEach(button => {
+    button.disabled = false;
   });
 }
 
-/* CONFIRMA do teclado seleciona a opção, sem registrar participação. */
-if (urnaConfirma) {
-  urnaConfirma.addEventListener("click", () => {
-    const opcoes = { "22": "1", "13": "2" };
+if (confirmBtn) confirmBtn.disabled = false;
+if (clearBtn) clearBtn.disabled = false;
 
-    if (urnaNumeroDigitado) {
-      const numero = urnaNumeroDigitado;
-      const id = opcoes[numero];
+atualizarPrevia(null);
+atualizarDisplay();
+renderResults();
 
-      if (!id) {
-        urnaNumeroDigitado = "";
-        clearSelection();
-        atualizarDisplay(
-          "Número inválido. Digite 22 para Flávio ou 13 para Lula."
-        );
-        return;
-      }
+if (feedback) {
+  feedback.textContent = "Dados locais zerados. A simulação está liberada novamente neste navegador.";
+}
 
-      selecionarPeloTeclado(id);
-      return;
-    }
+});
+}
 
-    if (selectedChoice) {
-      atualizarDisplay(
-        "Opção selecionada. Use o botão verde para registrar a participação fictícia."
-      );
-      return;
-    }
+/* Configuração da chave Pix e botão de cópia. */
+if (PIX_KEY.trim()) {
+const pixStatus = document.getElementById("pixStatus");
+const pixKeyDisplay = document.getElementById("pixKeyDisplay");
+const pixActions = document.getElementById("pixActions");
+const copyPixBtn = document.getElementById("copyPixBtn");
 
-    atualizarDisplay(
-      "Nenhuma opção selecionada. Digite 22 ou 13, ou escolha BRANCO/NULO."
-    );
-  });
+if (pixStatus) {
+pixStatus.textContent =
+"Chave Pix configurada. Confira o destinatário no aplicativo do banco antes de transferir.";
+}
+
+if (pixKeyDisplay) pixKeyDisplay.textContent = PIX_KEY;
+if (pixActions) pixActions.hidden = false;
+
+if (copyPixBtn) {
+copyPixBtn.addEventListener("click", async () => {
+try {
+await navigator.clipboard.writeText(PIX_KEY);
+copyPixBtn.textContent = "Chave copiada!";
+} catch {
+if (pixStatus) pixStatus.textContent =
+"Copie manualmente a chave exibida na tela.";
+}
+});
+}
 }
 
 renderResults();
-clearSelection();
+atualizarPrevia(null);
 atualizarDisplay();
+atualizarEstadoBloqueio();
