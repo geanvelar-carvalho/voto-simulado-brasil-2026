@@ -48,3 +48,33 @@
   font-size: 1.1rem;
   font-weight: 700;
 }
+/* Fotos dos candidatos */
+.candidate-photo {
+  width: 58px;
+  height: 68px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 8px;
+  border: 2px solid #d8e5dc;
+  display: block;
+  flex-shrink: 0;
+}
+
+.candidate-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.candidate-info strong,
+.candidate-info small {
+  line-height: 1.3;
+}
+
+@media (max-width: 420px) {
+  .candidate-photo {
+    width: 48px;
+    height: 58px;
+  }
+}
